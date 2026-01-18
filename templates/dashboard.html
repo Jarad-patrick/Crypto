@@ -645,7 +645,8 @@
             <div class="deposit-right">
               <div class="muted">QR Code</div>
               <div style="height:10px"></div>
-              <canvas id="depQR" width="220" height="220" style="background:#fff;border-radius:16px;"></canvas>
+              <img id="depQRPlaceholder" src="/static/qr.png" alt="QR placeholder" style="width:220px;height:220px;background:#fff;border-radius:16px;display:none;" />
+              <canvas id="depQR" width="220" height="220" style="background:#fff;border-radius:16px;display:none;"></canvas>
             </div>
           </div>
         </div>
@@ -1442,18 +1443,25 @@
       if(!canvas) return;
       const ctx2 = canvas.getContext("2d");
       ctx2.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.display = "none";
+      const placeholder = document.getElementById("depQRPlaceholder");
+      if(placeholder) placeholder.style.display = "none";
     }
 
     function lockAddressUI(){
       document.getElementById("depAddress").value = "Check the box to reveal address";
       document.getElementById("copyDepBtn").disabled = true;
       document.getElementById("depNote").textContent = "You must accept the risk warning before the address is shown.";
+      const placeholder = document.getElementById("depQRPlaceholder");
+      if(placeholder) placeholder.style.display = "none";
       clearQR();
     }
 
     async function fetchAndShowDepositAddress(){
       const coin = document.getElementById("depCoin").value;
       const network = document.getElementById("depNetwork").value;
+      const placeholder = document.getElementById("depQRPlaceholder");
+      if(placeholder) placeholder.style.display = "block";
 
       try{
         const res = await fetch(`/api/deposit_address?coin=${encodeURIComponent(coin)}&network=${encodeURIComponent(network)}`);
@@ -1462,22 +1470,24 @@
         const addrEl = document.getElementById("depAddress");
         const noteEl = document.getElementById("depNote");
 
-        if(!data.success){
-          addrEl.value = "Not configured";
-          noteEl.textContent = data.message || `No address set for ${coin} on ${network}.`;
-          document.getElementById("copyDepBtn").disabled = true;
-          clearQR();
-          return;
-        }
+      if(!data.success){
+        addrEl.value = "Not configured";
+        noteEl.textContent = data.message || `No address set for ${coin} on ${network}.`;
+        document.getElementById("copyDepBtn").disabled = true;
+        clearQR();
+        return;
+      }
 
-        addrEl.value = data.address;
-        noteEl.textContent = `Send only ${data.coin} on ${data.network}.`;
-        document.getElementById("copyDepBtn").disabled = false;
+      addrEl.value = data.address;
+      noteEl.textContent = `Send only ${data.coin} on ${data.network}.`;
+      document.getElementById("copyDepBtn").disabled = false;
 
-        const canvas = document.getElementById("depQR");
-        if(window.QRCode){
-          QRCode.toCanvas(canvas, data.address, { width: 220 });
-        }
+      const canvas = document.getElementById("depQR");
+      if(window.QRCode){
+        QRCode.toCanvas(canvas, data.address, { width: 220 });
+        canvas.style.display = "block";
+        if(placeholder) placeholder.style.display = "none";
+      }
       }catch(e){
         document.getElementById("depAddress").value = "Not configured";
         document.getElementById("depNote").textContent = "Deposit address endpoint error.";
