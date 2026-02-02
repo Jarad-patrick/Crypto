@@ -25,6 +25,11 @@ class Config:
             "OPTIMISM": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
             "SOL": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
         },
+        "CAD": {
+            "INTERAC": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
+            "SWIFT": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
+            "WIRE": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+        },
         "BTC": {
             "BTC": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
         },

@@ -575,6 +575,7 @@
               <select id="depCoin" class="input" style="margin-top:6px;">
                 <option value="USDT" selected>USDT</option>
                 <option value="USDC">USDC</option>
+                <option value="CAD">CAD</option>
                 <option value="BTC">BTC</option>
                 <option value="ETH">ETH</option>
                 <option value="BNB">BNB</option>
@@ -663,6 +664,7 @@
               <select id="wdCoin" class="input" style="margin-top:6px;">
                 <option value="USDT" selected>USDT</option>
                 <option value="USDC">USDC</option>
+                <option value="CAD">CAD</option>
                 <option value="BTC">BTC</option>
                 <option value="ETH">ETH</option>
                 <option value="BNB">BNB</option>
@@ -824,7 +826,7 @@
 
               <div class="row">
                 <select id="adminCoin" class="input">
-                  <option>USDT</option><option>USDC</option><option>BTC</option><option>ETH</option>
+                  <option>USDT</option><option>USDC</option><option>CAD</option><option>BTC</option><option>ETH</option>
                   <option>BNB</option><option>SOL</option><option>XRP</option><option>TRX</option>
                   <option>LTC</option><option>DOGE</option>
                 </select>
@@ -1354,6 +1356,7 @@
     const NETWORK_MAP = {
       "USDT": ["TRC20","ERC20","BEP20","POLYGON","ARBITRUM","OPTIMISM","SOL"],
       "USDC": ["ERC20","BEP20","POLYGON","ARBITRUM","OPTIMISM","SOL"],
+      "CAD": ["INTERAC","SWIFT","WIRE"],
       "BTC": ["BTC"],
       "ETH": ["ETH","ARBITRUM","OPTIMISM"],
       "BNB": ["BEP20"],
@@ -1379,6 +1382,10 @@
       "USDC|ARBITRUM": { min: "1 USDC", conf: "20", warn: "Send only USDC via Arbitrum. Do not send via ERC20." },
       "USDC|OPTIMISM": { min: "1 USDC", conf: "20", warn: "Send only USDC via Optimism. Do not send via ERC20." },
       "USDC|SOL": { min: "1 USDC", conf: "32", warn: "Send only USDC via Solana network." },
+
+      "CAD|INTERAC": { min: "10 CAD", conf: "1", warn: "Send only CAD via Interac. Use the exact reference code provided to avoid delays." },
+      "CAD|SWIFT": { min: "100 CAD", conf: "1", warn: "Send only CAD via SWIFT. Ensure beneficiary and reference details match exactly." },
+      "CAD|WIRE": { min: "100 CAD", conf: "1", warn: "Send only CAD via bank wire. Include the reference code to ensure proper credit." },
 
       "BTC|BTC": { min: "0.0001 BTC", conf: "2", warn: "Send only BTC to this address. Do not send BTC on wrapped networks." },
       "ETH|ETH": { min: "0.001 ETH", conf: "12", warn: "Send only ETH on Ethereum network. Do not send via Arbitrum/Optimism unless selected." },
@@ -1554,6 +1561,7 @@
     const WD_FEE_MAP = {
       "USDT": { fee: "1.00", min: "5.00", time: "~5-30 min" },
       "USDC": { fee: "1.00", min: "5.00", time: "~5-30 min" },
+      "CAD": { fee: "1.00", min: "5.00", time: "~1-3 business days" },
       "BTC": { fee: "0.0003", min: "0.001", time: "~10-60 min" },
       "ETH": { fee: "0.003", min: "0.01", time: "~5-20 min" },
       "BNB": { fee: "0.005", min: "0.02", time: "~2-10 min" },

@@ -21,7 +21,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "index"
 
-# ✅ Use threading (recommended)
+#Use threading (recommended)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 # simple in-memory price cache to reduce API calls
@@ -33,6 +33,7 @@ _MARKETS_TTL_SECONDS = 30
 _DEFAULT_PRICE_MAP = {
     "USDT": 1.0,
     "USDC": 1.0,
+    "CAD": 1.0,
     "BTC": 43000.0,
     "ETH": 2300.0,
     "SOL": 100.0,
@@ -263,7 +264,7 @@ def api_assets():
     ids = []
     for r in rows:
         sym = (r.coin or "").upper()
-        if sym in ("USD",):
+        if sym in ("USD", "CAD"):
             price_map[sym] = 1.0
         elif sym in symbol_to_id:
             ids.append(symbol_to_id[sym])
@@ -281,7 +282,10 @@ def api_assets():
             for sym, cid in symbol_to_id.items():
                 if cid in data and "usd" in data[cid]:
                     price_map[sym] = float(data[cid]["usd"])
-            _price_cache["prices"] = {k: v for k, v in price_map.items() if k in symbol_to_id or k == "USD"}
+            _price_cache["prices"] = {
+                k: v for k, v in price_map.items()
+                if k in symbol_to_id or k in ("USD", "CAD")
+            }
             _price_cache["ts"] = now
             _save_price_cache()
         except Exception:
@@ -300,7 +304,7 @@ def api_assets():
     for r in rows:
         px = float(price_map.get(r.coin.upper(), 0))
         value = float(r.amount) * px
-        if r.coin.upper() in ("USDT", "USD", "USDC"):
+        if r.coin.upper() in ("USDT", "USD", "USDC", "CAD"):
             available += float(r.amount)
 
         assets.append({
