@@ -625,19 +625,33 @@ def price_streamer():
                 params={"ids": ",".join(ids), "vs_currencies": "usd"},
                 timeout=10
             )
-            data = res.json()
+            data = res.json() if res.ok else {}
 
-            payload = {
-                "BTC": float(data.get("bitcoin", {}).get("usd", 0)),
-                "ETH": float(data.get("ethereum", {}).get("usd", 0)),
-                "SOL": float(data.get("solana", {}).get("usd", 0)),
-                "XRP": float(data.get("ripple", {}).get("usd", 0)),
-                "ts": int(time.time() * 1000),
+            last = _price_cache.get("prices") or {}
+            prices = {
+                "BTC": float(data.get("bitcoin", {}).get("usd") or 0.0),
+                "ETH": float(data.get("ethereum", {}).get("usd") or 0.0),
+                "SOL": float(data.get("solana", {}).get("usd") or 0.0),
+                "XRP": float(data.get("ripple", {}).get("usd") or 0.0),
             }
+            for sym in ("BTC", "ETH", "SOL", "XRP"):
+                if prices[sym] <= 0:
+                    prices[sym] = float(last.get(sym) or _DEFAULT_PRICE_MAP.get(sym, 0.0))
 
-            socketio.emit("ticker_update", payload)
+            _price_cache["prices"].update(prices)
+            _price_cache["ts"] = time.time()
+            _save_price_cache()
+
+            socketio.emit("ticker_update", {**prices, "ts": int(time.time() * 1000)})
         except Exception:
-            pass
+            last = _price_cache.get("prices") or {}
+            prices = {
+                "BTC": float(last.get("BTC") or _DEFAULT_PRICE_MAP.get("BTC", 0.0)),
+                "ETH": float(last.get("ETH") or _DEFAULT_PRICE_MAP.get("ETH", 0.0)),
+                "SOL": float(last.get("SOL") or _DEFAULT_PRICE_MAP.get("SOL", 0.0)),
+                "XRP": float(last.get("XRP") or _DEFAULT_PRICE_MAP.get("XRP", 0.0)),
+            }
+            socketio.emit("ticker_update", {**prices, "ts": int(time.time() * 1000)})
 
         socketio.sleep(1.5)
 
